@@ -1,0 +1,49 @@
+﻿1 - criar webapi
+2 - criar models
+3 - criar dbcontext
+    public class ShopContext : DbContext
+    {
+        public ShopContext(DbContextOptions<ShopContext> options):base(options)
+        {
+
+        }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<Order> Orders { get; set; }
+    }
+4 - edit project
+	<ItemGroup>
+		<DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.0" />
+	</ItemGroup>
+
+5 - Criar em appSettings.json
+  "ConnectionStrings": {
+    "BancoStringConnection": "server=(localdb)\\ProjectsV13; Database=DBWebbSys; Integrated Security=true; MultipleActiveResultSets=true;"
+  }
+
+6 - Startup.cs (incluir)
+	    public IConfiguration _configuration { get; }
+        public Startup(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
+	    services.AddDbContext<ShopContext>(cfg=>
+        {
+            cfg.UseSqlServer(_configuration.GetConnectionString("BancoStringConnection"));
+        });
+7 - Alterar o program.cs assim:
+    public static IWebHost BuildWebHost(string[] args) =>
+            WebHost.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration(SetupConfiguration)
+                .UseStartup<Startup>()
+                .Build();
+
+        private static void SetupConfiguration(WebHostBuilderContext ctx, IConfigurationBuilder builder)
+        {
+            //removing the deafult configuration options
+            builder.Sources.Clear();
+            builder.AddJsonFile("appsettings.json", false, true)
+                .AddEnvironmentVariables();
+        }
+8 - no cmd, dotnet ef migrations add InitialDb
+9 - dotnet ef database update
