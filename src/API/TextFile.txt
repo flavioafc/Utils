@@ -71,3 +71,12 @@ Exemplo:
 14 - Incluir no startup.cs funcao configureServices
             services.AddTransient<ShopSeeder>();
             services.AddScoped<IShopRepository, ShopRepository>();
+
+15 - Controllers serao
+        [HttpGet]
+        public IActionResult Shop(){
+
+		var results = _repo.GetAllProducts();
+
+		return Ok(results.ToList());
+		}
