@@ -47,3 +47,27 @@
         }
 8 - no cmd, dotnet ef migrations add InitialDb
 9 - dotnet ef database update
+10 - criar interfaces de repositorio e implementa-las
+Exemplo:
+   public IEnumerable<Product> GetsProductsByCategory(string category)
+        {
+            return _ctx.Products
+                .Where(c => c.Category == category)
+                .ToList();
+        }
+11 - na controller utilizar
+      private readonly IShopRepository _repo;
+12 - criar o seeder.cs
+13 - incluir no startup.cs funcao configure
+   if (env.IsDevelopment())
+            {
+                //seed database
+                using (var scope = app.ApplicationServices.CreateScope())
+                {
+                    var seeder = scope.ServiceProvider.GetService<ShopSeeder>();
+                    seeder.Seed();
+                }
+            }
+14 - Incluir no startup.cs funcao configureServices
+            services.AddTransient<ShopSeeder>();
+            services.AddScoped<IShopRepository, ShopRepository>();
